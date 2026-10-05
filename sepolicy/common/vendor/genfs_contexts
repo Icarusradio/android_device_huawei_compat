@@ -30,10 +30,10 @@ genfscon sysfs /devices/platform/huawei_touch                              u:obj
 genfscon proc /devices/plateform/wireless_charger                          u:object_r:proc_power_hw_config:s0
 genfscon proc /devices/plateform/huawei_charger                            u:object_r:proc_power_hw_config:s0
 
-genfscon sysfs /firmware/devicetree/base/wireless_charger                  u:object_r:proc_power_hw_config:s0
-genfscon sysfs /firmware/devicetree/base/huawei_charger                    u:object_r:proc_power_hw_config:s0
-genfscon sysfs /firmware/devicetree/base/huawei_usb                        u:object_r:proc_power_hw_config:s0
-genfscon sysfs /firmware/devicetree/base/huawei_usbvbus                    u:object_r:proc_power_hw_config:s0
+genfscon sysfs /firmware/devicetree/base/wireless_charger                  u:object_r:sysfs_power_hw_config:s0
+genfscon sysfs /firmware/devicetree/base/huawei_charger                    u:object_r:sysfs_power_hw_config:s0
+genfscon sysfs /firmware/devicetree/base/huawei_usb                        u:object_r:sysfs_power_hw_config:s0
+genfscon sysfs /firmware/devicetree/base/huawei_usbvbus                    u:object_r:sysfs_power_hw_config:s0
 genfscon sysfs /class/hw_power/charger/charge_data/chargerType             u:object_r:sysfs_power:s0
 
 # proc
@@ -92,4 +92,3 @@ genfscon sysfs /devices/platform/huawei_ts_kit/debug_info                  u:obj
 genfscon proc /log-usertype                                                u:object_r:proc_log_usertype:s0
 
 genfscon sysfs /firmware/devicetree/base/hisi,product_name                 u:object_r:sysfs_hisi_product:s0
-

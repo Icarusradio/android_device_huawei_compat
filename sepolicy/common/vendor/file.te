@@ -17,11 +17,13 @@ type sysfs_touchscreen, sysfs_type, fs_type;
 type vendor_sysfs_graphics, sysfs_type, fs_type;
 
 type proc_power_hw_config, proc_type, fs_type;
+type sysfs_power_hw_config, sysfs_type, fs_type;
 type proc_log_usertype, proc_type, fs_type;
-type proc_gps_type, proc_type, fs_type;
-type proc_hisi_board, proc_type, fs_type;
-type proc_hw_soundtrigger_event, proc_type, fs_type;
-type proc_audio_hw_config, proc_type, fs_type;
+# These legacy type names describe device-tree nodes under /sys, not /proc.
+type proc_gps_type, sysfs_type, fs_type;
+type proc_hisi_board, sysfs_type, fs_type;
+type proc_hw_soundtrigger_event, sysfs_type, fs_type;
+type proc_audio_hw_config, sysfs_type, fs_type;
 
 
 # ==========================================

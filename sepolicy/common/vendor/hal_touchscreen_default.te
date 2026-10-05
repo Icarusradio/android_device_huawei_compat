@@ -29,7 +29,7 @@ allow hisi_touchscreen pmsg_device:file { write open };
 allow hisi_touchscreen proc_cmdline:file { open read getattr};
 allow hisi_touchscreen sysfs:file { open read write getattr};
 
-allow hisi_touchscreen rootfs:file { entrypoint read execute getattr open };
+allow hisi_touchscreen rootfs:file { read getattr open };
 allow hisi_touchscreen rootfs:dir { read };
 
 allow hisi_touchscreen self:capability { sys_nice };
@@ -58,4 +58,3 @@ get_prop(hisi_touchscreen, vendor_oem_prop)
 
 set_prop(hisi_touchscreen, vendor_aptouch_prop)
 get_prop(hisi_touchscreen, vendor_aptouch_prop)
-

@@ -48,6 +48,12 @@ ro.odm.config.hw_ipv6_support       u:object_r:vendor_radio_prop:s0
 ro.odm.config.m1csimlteflwims       u:object_r:vendor_radio_prop:s0
 ro.odm.config.cdma.ecclist          u:object_r:vendor_radio_prop:s0
 
+# Additional phone.prop configuration used by the C00 modem.
+ro.odm.cdma.dormancy.mode           u:object_r:vendor_radio_prop:s0 exact string
+ro.odm.cdma.dormancy.screen         u:object_r:vendor_radio_prop:s0 exact string
+ro.odm.config.fix_commril_mode      u:object_r:vendor_radio_prop:s0 exact bool
+ro.odm.config.both_m0_m2_gsm_cap     u:object_r:vendor_radio_prop:s0 exact bool
+
 ro.odm.pwroff_card_if_tray_out      u:object_r:vendor_radio_prop:s0
 ro.odm.disable_m1_gw_ps_attach      u:object_r:vendor_radio_prop:s0
 ro.odm.dual_imsi_hplmn_cust         u:object_r:vendor_radio_prop:s0
@@ -58,6 +64,11 @@ ro.odm.radio.                       u:object_r:vendor_radio_prop:s0
 
 # To start rild - hisi_init
 sys.rilprops_ready                  u:object_r:vendor_radio_prop:s0
+vendor.hisi.default_network         u:object_r:vendor_hisi_phone_config_prop:s0 exact string
+vendor.hisi.multisim_config         u:object_r:vendor_hisi_phone_config_prop:s0 exact string
+vendor.hisi.cdma_home_operator_numeric u:object_r:vendor_hisi_phone_config_prop:s0 exact string
+vendor.hisi.phone_props_ready       u:object_r:vendor_hisi_phone_config_prop:s0 exact bool
+persist.odm.cdma.temp               u:object_r:vendor_radio_prop:s0 exact bool
 
 
 # Rild properties stock EMUI 9.1

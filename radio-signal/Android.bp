@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: Apache-2.0
+cc_library_shared {
+    name: "libhisi-ril-signal",
+    vendor: true,
+    compile_multilib: "64",
+    srcs: ["radio_signal.cpp"],
+    header_libs: ["ril_headers"],
+    shared_libs: ["libdl", "liblog"],
+    stl: "none",
+    // rild is unmodified; Lineage's linker adds this library before DT_NEEDED.
+    // Keep its hooks visible to subsequently loaded vendor radio libraries.
+    ldflags: ["-Wl,-z,global"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+}

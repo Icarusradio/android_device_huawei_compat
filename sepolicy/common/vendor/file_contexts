@@ -53,7 +53,7 @@
 /vendor/bin/teecd                                                          u:object_r:tee_exec:s0
 /vendor/bin/wpa_supplicant_hisi                                            u:object_r:hal_wifi_supplicant_default_exec:s0
 /vendor/bin/aptouch_daemon                                                 u:object_r:hisi_touchscreen_exec:s0
-/vendor/bin/hw_charger                                                     u:object_r:charger_exec:s0
+/vendor/bin/hw_charger                                                     u:object_r:charger_vendor_exec:s0
 /vendor/bin/hiaiserver                                                     u:object_r:hiaiserver_exec:s0
 
 # Teecd
@@ -172,7 +172,9 @@
 # BLOCK DEVICES & MOUNT POINTS
 ###########################################
 
-/dev/block/by-name/(cust|odm|preas|product|system|vendor)                  u:object_r:system_block_device:s0
+# MediaPad M5 supplies its own named and physical partition labels.
+ifelse(huawei_mediapadm5lte, `true', `', `
+/dev/block/by-name/(cust|odm|preas|preload|product|system|vendor)           u:object_r:system_block_device:s0
 /dev/block/by-name/kernel                                                  u:object_r:boot_block_device:s0
 /dev/block/by-name/misc                                                    u:object_r:misc_block_device:s0
 /dev/block/by-name/nvme                                                    u:object_r:nve_block_device:s0
@@ -195,7 +197,6 @@
 /dev/block/mmcblk0p14                                                      u:object_r:modemnvm_block_device:s0
 /dev/block/mmcblk0p15                                                      u:object_r:modemnvm_block_device:s0
 /dev/block/mmcblk0p57                                                      u:object_r:modemnvm_block_device:s0
-/dev/block/mmcblk0p58                                                      u:object_r:modemnvm_block_device:s0
 
 /dev/block/mmcblk0p7                                                       u:object_r:modem_secure_device:s0
 /dev/block/mmcblk0p50                                                      u:object_r:modem_device:s0
@@ -209,6 +210,7 @@
 /dev/block/platform/hi_mci\.0/by-name/cust                                 u:object_r:system_block_device:s0
 /dev/block/platform/hi_mci\.0/by-name/odm                                  u:object_r:system_block_device:s0
 /dev/block/platform/hi_mci\.0/by-name/preas                                u:object_r:system_block_device:s0
+/dev/block/platform/hi_mci\.0/by-name/preload                              u:object_r:system_block_device:s0
 /dev/block/platform/hi_mci\.0/by-name/product                              u:object_r:system_block_device:s0
 /dev/block/platform/hi_mci\.0/by-name/system                               u:object_r:system_block_device:s0
 /dev/block/platform/hi_mci\.0/by-name/vendor                               u:object_r:system_block_device:s0
@@ -224,6 +226,7 @@
 /dev/block/platform/ff3c0000\.ufs/by-name/vendor                           u:object_r:system_block_device:s0
 /dev/block/platform/ff3c0000\.ufs/by-name/patch                            u:object_r:metadata_block_device:s0
 /dev/block/platform/ff3c0000\.ufs/by-name/userdata                         u:object_r:userdata_block_device:s0
+')
 
 # log devices
 /dev/hwlog_jank                                                            u:object_r:hwlog_device:s0
@@ -231,6 +234,9 @@
 
 # splash2 files
 /splash2(/.*)?                                  			   u:object_r:splash_data_file:s0
+
+# hw_odm bind mount
+/hw_odm(/.*)?                                                              u:object_r:rootfs:s0
 
 # preavs files
 /preavs(/.*)?                                  			           u:object_r:preavs_data_file:s0
@@ -282,5 +288,3 @@
 /vendor/firmware/ts(/.*)?                                                  u:object_r:firmware_vendor_file:s0
 /system/vendor/firmware/ts(/.*)?                                           u:object_r:firmware_vendor_file:s0
 /odm/etc/firmware/ts/                                                      u:object_r:firmware_vendor_file:s0
-
-

@@ -41,6 +41,7 @@ set_prop(vendor_init, vendor_radio_prop)
 set_prop(vendor_init, vendor_fingerprint_prop)
 set_prop(vendor_init, vendor_wifi_prop)
 get_prop(vendor_init, config_prop)
+get_prop(vendor_init, vendor_hisi_phone_config_prop)
 
 allow vendor_init bootanim_system_prop:file read;
 
@@ -65,4 +66,3 @@ allow vendor_init pmsg_device:file { create write open };
 
 allow vendor_init firmware_vendor_file:dir { search };
 allow vendor_init firmware_vendor_file:file { open read };
-

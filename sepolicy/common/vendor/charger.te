@@ -4,35 +4,40 @@
 # Huawei charger
 # Base daemon for Huawei's hw_charger animation
 
-allow charger rootfs:file { ioctl read getattr lock map execute entrypoint open };
-allow charger self:capability2 { wake_alarm };
+# The Huawei executable lives on /vendor; the platform charger remains a
+# separate coredomain. Use the platform's vendor charger domain.
+type charger_vendor_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(charger_vendor)
+hal_client_domain(charger_vendor, hal_health)
+allow charger_vendor self:capability2 { wake_alarm };
 
 # Allow charger to read and write to sysfs_power
-allow charger sysfs_power:file rw_file_perms;
-allow charger sysfs_power:dir r_dir_perms;
-allow charger sysfs_power:lnk_file { read getattr };
+allow charger_vendor sysfs_power:file rw_file_perms;
+allow charger_vendor sysfs_power:dir r_dir_perms;
+allow charger_vendor sysfs_power:lnk_file { read getattr };
 
-allow charger sysfs_backlight:file { read write open };
-allow charger sysfs_brightness:file { getattr read open };
-allow charger sysfs_led:file { write getattr open};
-allow charger sysfs_led:dir { search };
+allow charger_vendor sysfs_backlight:file { read write open };
+allow charger_vendor sysfs_brightness:file { getattr read open };
+allow charger_vendor sysfs_led:file { write getattr open};
+allow charger_vendor sysfs_led:dir { search };
 
-allow charger proc_overcommit_memory:file { open read };
-allow charger proc_power_hw_config:dir { search };
+allow charger_vendor proc_overcommit_memory:file { open read };
+allow charger_vendor proc_power_hw_config:dir search;
+r_dir_file(charger_vendor, sysfs_power_hw_config)
 
 # device
-allow charger device:dir { read open };
-allow charger input_device:dir { read open };
-allow charger extra_input_device:chr_file { read open };
-allow charger extra_input_device:chr_file { ioctl };
-allowxperm charger extra_input_device:chr_file ioctl {  0x4518 0x4520 };
+allow charger_vendor device:dir { read open };
+allow charger_vendor input_device:dir { read open };
+allow charger_vendor extra_input_device:chr_file { read open };
+allow charger_vendor extra_input_device:chr_file { ioctl };
+allowxperm charger_vendor extra_input_device:chr_file ioctl {  0x4518 0x4520 };
 
 
-# The system charger can write  powerctl properties
-set_prop(charger, powerctl_prop)
+# Request reboot or power-off via init
+set_prop(charger_vendor, powerctl_prop)
 
-allow charger kmsg_device:chr_file { open write };
-allow charger self:netlink_kobject_uevent_socket { read setopt create bind };
+allow charger_vendor kmsg_device:chr_file { open write };
+allow charger_vendor self:netlink_kobject_uevent_socket { read setopt create bind };
 
-allow charger graphics_device:chr_file { read write open ioctl };
+allow charger_vendor graphics_device:chr_file { read write open ioctl };
 

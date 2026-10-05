@@ -54,4 +54,4 @@ set_prop(vendor_hisi_init, vendor_wifi_prop)
 set_prop(vendor_hisi_init, vendor_oem_prop)
 set_prop(vendor_hisi_init, vendor_rild_prop)
 set_prop(vendor_hisi_init, vendor_radio_prop)
-
+set_prop(vendor_hisi_init, vendor_hisi_phone_config_prop)
