@@ -1,0 +1,99 @@
+// SPDX-License-Identifier: Apache-2.0
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// Keep the Huawei lifecycle fixes separate from the platform's default HAL.
+// Packet framing and the FD watcher continue to use the upstream libraries.
+cc_defaults {
+    name: "huawei-bluetooth-vendor-defaults",
+    defaults: ["hidl_defaults"],
+    vendor: true,
+    local_include_dirs: ["1.0"],
+    srcs: [
+        "1.0/bluetooth_address.cc",
+        "1.0/vendor_interface.cc",
+    ],
+    shared_libs: [
+        "android.hardware.bluetooth@1.0",
+        "libbase",
+        "libcutils",
+        "libdl",
+        "libhardware",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+    ],
+    static_libs: [
+        "android.hardware.bluetooth-async",
+        "android.hardware.bluetooth-hci",
+    ],
+}
+
+cc_binary {
+    name: "android.hardware.bluetooth@1.0-service.huawei",
+    defaults: ["huawei-bluetooth-vendor-defaults"],
+    relative_install_path: "hw",
+    init_rc: ["android.hardware.bluetooth@1.0-service.huawei.rc"],
+    overrides: ["android.hardware.bluetooth@1.0-service"],
+    srcs: [
+        "1.0/bluetooth_hci.cc",
+        "1.0/service.cpp",
+    ],
+}
+
+// Preserve the existing 1.1 implementation for devices that select that HAL.
+// MediaPad M5 LTE continues to advertise and install only version 1.0.
+cc_binary {
+    name: "android.hardware.bluetooth@1.1-service.huawei",
+    defaults: ["huawei-bluetooth-vendor-defaults"],
+    relative_install_path: "hw",
+    init_rc: ["android.hardware.bluetooth@1.1-service.huawei.rc"],
+    overrides: ["android.hardware.bluetooth@1.1-service"],
+    srcs: [
+        "1.1/bluetooth_hci.cc",
+        "1.1/service.cpp",
+    ],
+    shared_libs: ["android.hardware.bluetooth@1.1"],
+}
+
+cc_library_static {
+    name: "android.hardware.bluetooth@1.0-impl-huawei-test",
+    defaults: ["huawei-bluetooth-vendor-defaults"],
+    srcs: ["1.0/bluetooth_hci.cc"],
+    export_include_dirs: ["1.0"],
+    cflags: ["-DBT_FUZZER"],
+}
+
+cc_library {
+    name: "libbt-vendor-huawei-fuzz",
+    vendor: true,
+    installable: false,
+    srcs: ["test/fuzzer/bt_vendor.cpp"],
+    static_libs: [
+        "android.hardware.bluetooth@1.0-impl-huawei-test",
+        "android.hardware.bluetooth-hci",
+    ],
+}
+
+cc_fuzz {
+    name: "bluetoothV1.0_huawei_fuzzer",
+    vendor: true,
+    cflags: ["-DBT_FUZZER"],
+    srcs: ["test/fuzzer/bluetoothV1.0_fuzzer.cpp"],
+    static_libs: [
+        "android.hardware.bluetooth@1.0-impl-huawei-test",
+        "android.hardware.bluetooth-async",
+        "android.hardware.bluetooth-hci",
+        "libcutils",
+    ],
+    shared_libs: [
+        "android.hardware.bluetooth@1.0",
+        "libhardware",
+        "libhidlbase",
+        "libbt-vendor-huawei-fuzz",
+        "liblog",
+        "libutils",
+    ],
+}
