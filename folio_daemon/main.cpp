@@ -130,7 +130,18 @@ int main(void) {
     ALOGI("Starting polling loop");
 
     // Polling loop
-    while (ALooper_pollAll(-1, NULL, NULL, NULL) == 0) {
+    while (true) {
+        const int result = ALooper_pollOnce(-1, nullptr, nullptr, nullptr);
+        if (result == ALOOPER_POLL_ERROR) {
+            ALOGE("Unable to poll Hall-effect sensor events");
+            break;
+        }
+        // Only identifier 0 belongs to the sensor queue. Wakes and callbacks
+        // must not terminate the daemon or be treated as sensor events.
+        if (result != 0) {
+            continue;
+        }
+
         int eventCount = 0;
         ASensorEvent sensorEvent;
         while (ASensorEventQueue_getEvents(eventQueue, &sensorEvent, 1) > 0) {
