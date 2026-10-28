@@ -1,0 +1,39 @@
+// SPDX-FileCopyrightText: 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_library_shared {
+    name: "libaudiohal_huawei_4_0",
+    stem: "libaudiohal@4.0",
+    compile_multilib: "both",
+
+    // This system-side client keeps the CFI enabled for the original module.
+    sanitize: {
+        cfi: true,
+    },
+
+    defaults: [
+        "libaudiohal_default",
+        "libaudiohal_hidl_default",
+    ],
+    srcs: [
+        ":audio_core_hal_client_sources",
+        ":audio_effect_hidl_hal_client_sources",
+        "EffectsFactoryHalEntry.cpp",
+    ],
+    header_libs: [
+        "libaudiohalimpl_headers",
+    ],
+    shared_libs: [
+        "android.hardware.audio.common@4.0",
+        "android.hardware.audio.common@4.0-util",
+        "android.hardware.audio.effect@4.0",
+        "android.hardware.audio.effect@4.0-util",
+        "android.hardware.audio@4.0",
+        "android.hardware.audio@4.0-util",
+    ],
+    cflags: [
+        "-DMAJOR_VERSION=4",
+        "-DMINOR_VERSION=0",
+        "-include common/all-versions/VersionMacro.h",
+    ],
+}
