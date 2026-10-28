@@ -232,6 +232,9 @@
 # splash2 files
 /splash2(/.*)?                                  			   u:object_r:splash_data_file:s0
 
+# hw_odm bind mount
+/hw_odm(/.*)?                                                              u:object_r:rootfs:s0
+
 # preavs files
 /preavs(/.*)?                                  			           u:object_r:preavs_data_file:s0
 
