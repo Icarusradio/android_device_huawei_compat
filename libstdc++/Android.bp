@@ -1,0 +1,17 @@
+// Android 15 names the vendor bionic compatibility library libstdc++_vendor.
+// Keep the libstdc++.so lookup used by the EMUI binaries in both vendor ABIs.
+install_symlink {
+    name: "libstdc++_vendor_symlink32",
+    vendor: true,
+    installed_location: "lib/libstdc++.so",
+    symlink_target: "libstdc++_vendor.so",
+    required: ["libstdc++_vendor"],
+}
+
+install_symlink {
+    name: "libstdc++_vendor_symlink64",
+    vendor: true,
+    installed_location: "lib64/libstdc++.so",
+    symlink_target: "libstdc++_vendor.so",
+    required: ["libstdc++_vendor"],
+}
