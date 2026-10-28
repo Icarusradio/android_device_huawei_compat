@@ -2,7 +2,6 @@
 # hal_lineage.te
 # ==========================================
 
-allow hal_lineage_trust_default pmsg_device:file { open write };
 allow hal_lineage_touch_default sysfs:file { write open };
 allow hal_lineage_livedisplay_sysfs sysfs_pg:file { read open getattr };
 
