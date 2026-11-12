@@ -1,0 +1,46 @@
+cc_binary {
+    name: "android.hardware.bluetooth@1.0-service.huawei-compat",
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
+    vendor: true,
+    init_rc: ["android.hardware.bluetooth@1.0-service.huawei-compat.rc"],
+    overrides: ["android.hardware.bluetooth@1.0-service"],
+    required: ["android.hardware.bluetooth@1.0-impl"],
+    srcs: ["service_main.cpp"],
+    static_libs: ["libhuawei_bluetooth_hci_proxy"],
+    shared_libs: [
+        "libbase",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "android.hardware.bluetooth@1.0",
+    ],
+}
+
+cc_library_static {
+    name: "libhuawei_bluetooth_hci_proxy",
+    vendor: true,
+    srcs: ["proxy.cpp"],
+    export_include_dirs: ["include"],
+    shared_libs: [
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "android.hardware.bluetooth@1.0",
+    ],
+}
+
+cc_test_host {
+    name: "huawei-bluetooth-hci-proxy-test",
+    srcs: ["proxy_test.cpp", "proxy.cpp"],
+    local_include_dirs: ["include"],
+    static_libs: ["libgtest", "libgtest_main"],
+    shared_libs: [
+        "libbase",
+        "libhidlbase",
+        "liblog",
+        "libutils",
+        "android.hardware.bluetooth@1.0",
+    ],
+    test_suites: ["general-tests"],
+}
