@@ -1,0 +1,146 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+cc_library_shared {
+    name: "libhuawei_looper_compat",
+    // Same-length as libutils.so for the CameraDaemon DT_NEEDED replacement.
+    stem: "libhloop",
+    srcs: ["LooperThreadState.cpp"],
+    shared_libs: [
+        "liblog",
+        "libutils",
+    ],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    header_libs: ["libutils_headers"],
+    version_script: "looper_compat.map.txt",
+    ldflags: [
+        // GLOBAL lets later camera DSOs resolve the TLS entry points here;
+        // NODELETE keeps the pthread-key destructor code mapped for thread exit.
+        "-Wl,-z,global",
+        "-Wl,-z,nodelete",
+    ],
+    vendor: true,
+    host_supported: true,
+    compile_multilib: "both",
+    target: {
+        host: {
+            enabled: false,
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+    },
+}
+
+cc_library_shared {
+    name: "looper_tls_test_consumer_a",
+    srcs: ["tests/LooperConsumerA.cpp"],
+    shared_libs: ["libutils"],
+    header_libs: ["libutils_headers"],
+    host_supported: true,
+    target: {
+        host: {
+            enabled: false,
+        },
+        android: {
+            enabled: false,
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+    },
+}
+
+cc_library_shared {
+    name: "looper_tls_test_consumer_b",
+    srcs: ["tests/LooperConsumerB.cpp"],
+    shared_libs: ["libutils"],
+    header_libs: ["libutils_headers"],
+    host_supported: true,
+    target: {
+        host: {
+            enabled: false,
+        },
+        android: {
+            enabled: false,
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+    },
+}
+
+cc_library_shared {
+    name: "looper_tls_dlopen_fixture",
+    srcs: ["tests/LooperDlopenFixture.cpp"],
+    shared_libs: [
+        "libutils",
+        "looper_tls_test_consumer_a",
+        "looper_tls_test_consumer_b",
+    ],
+    header_libs: ["libutils_headers"],
+    host_supported: true,
+    target: {
+        host: {
+            enabled: false,
+        },
+        android: {
+            enabled: false,
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+    },
+}
+
+cc_test {
+    name: "looper_tls_test_control",
+    srcs: ["tests/LooperTLSHostTest.cpp"],
+    shared_libs: ["libdl", "libutils"],
+    header_libs: ["libutils_headers"],
+    data_libs: ["looper_tls_dlopen_fixture"],
+    test_suites: ["general-tests"],
+    gtest: false,
+    host_supported: true,
+    target: {
+        host: {
+            enabled: false,
+        },
+        android: {
+            enabled: false,
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+    },
+}
+
+cc_test {
+    name: "looper_tls_test_compat",
+    srcs: ["tests/LooperTLSHostTest.cpp"],
+    shared_libs: [
+        "libdl",
+        "libutils",
+        "libhuawei_looper_compat",
+    ],
+    header_libs: ["libutils_headers"],
+    data_libs: ["looper_tls_dlopen_fixture"],
+    cflags: ["-DLOOPER_TLS_TEST_COMPAT=1"],
+    test_suites: ["general-tests"],
+    gtest: false,
+    host_supported: true,
+    target: {
+        host: {
+            enabled: false,
+        },
+        android: {
+            enabled: false,
+        },
+        linux_bionic: {
+            enabled: true,
+        },
+    },
+}

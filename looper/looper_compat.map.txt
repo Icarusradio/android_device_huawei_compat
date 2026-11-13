@@ -1,0 +1,8 @@
+{
+    global:
+        _ZN7android6Looper7prepareEi;
+        _ZN7android6Looper12getForThreadEv;
+        _ZN7android6Looper12setForThreadERKNS_2spIS0_EE;
+    local:
+        *;
+};
