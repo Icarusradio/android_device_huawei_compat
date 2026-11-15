@@ -61,8 +61,8 @@ are tail-forwarded and their driver calls, callbacks, and transitive runtime
 behavior are outside this wrapper's protection boundary. No claim is made
 that matching exports alone captures the driver's complete dependency closure.
 A different or updated vendor blob must be re-audited for its SHA-256, export
-set, and runtime behavior before this forwarding list is reused. The product
-integration keeps the existing HWUI x18 patch. Full product-loader selection,
-zygote/HWUI startup, real rendering, and SELinux Enforcing behavior remain
-unverified; the device test ran with SELinux in Permissive mode. Do not remove
-the HWUI patch based on the isolated driver tests alone.
+set, and runtime behavior before this forwarding list is reused. The CMR-AL09
+product integration passed the user's reported checks with the platform HWUI
+x18 guard still present; that guard has since been removed from frameworks/base.
+The earlier device A/B ran with SELinux in Permissive mode. Boot, loader and
+rendering behavior with the guard removed must be validated on the resulting build.
