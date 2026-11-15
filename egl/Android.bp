@@ -1,0 +1,26 @@
+// Copyright (C) 2026 The LineageOS Project
+
+cc_library_shared {
+    name: "libGLES_huawei_compat",
+    vendor: true,
+    compile_multilib: "both",
+    relative_install_path: "egl",
+    srcs: [
+        "Wrapper.cpp",
+        "Guard.S",
+        "Forwarders.S",
+    ],
+    header_libs: ["gl_headers"],
+    stl: "none",
+    shared_libs: ["libdl", "libc"],
+    cflags: [
+        "-fvisibility=hidden",
+        "-fno-exceptions",
+        "-fno-rtti",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+    ldflags: ["-Wl,-Bsymbolic"],
+    version_script: "DriverSymbols.map",
+}
