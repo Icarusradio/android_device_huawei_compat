@@ -1,0 +1,21 @@
+// Copyright (C) 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+
+cc_library_static {
+    name: "libhuawei_audio_stream_compat_prototype",
+    srcs: ["StreamAdapter.cpp"],
+    export_include_dirs: ["include"],
+    header_libs: [
+        "libaudio_system_headers",
+        "libhardware_headers",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fno-exceptions",
+    ],
+    cpp_std: "c++17",
+    compile_multilib: "64",
+    vendor: true,
+}
