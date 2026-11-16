@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 cc_library_static {
-    name: "libhuawei_audio_stream_compat_prototype",
+    name: "libhuawei_audio_stream_compat",
     srcs: ["StreamAdapter.cpp"],
     export_include_dirs: ["include"],
     header_libs: [

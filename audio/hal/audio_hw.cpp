@@ -25,6 +25,14 @@
 
 #include "audio_hisi.h"
 
+#if defined(HUAWEI_AUDIO_STREAM_COMPAT)
+#if !defined(__LP64__) || EMUI_VERSION != 9
+#error "The Huawei stream compatibility profile requires LP64 and EMUI_VERSION 9"
+#endif
+#include "ModuleProfile.h"
+#include "huawei_audio_stream/StreamAdapter.h"
+#endif
+
 struct hisi_wrapper_audio_device {
     struct audio_hw_device device;
     struct hisi_audio_hw_device* hisi_device;
@@ -40,14 +48,45 @@ static int adev_open_output_stream(struct audio_hw_device* dev, audio_io_handle_
                                    struct audio_stream_out** stream_out, const char* address) {
     hisi_wrapper_audio_device* ctx = reinterpret_cast<hisi_wrapper_audio_device*>(dev);
 
+#if defined(HUAWEI_AUDIO_STREAM_COMPAT)
+    if (stream_out == nullptr) return -EINVAL;
+    *stream_out = nullptr;
+    audio_stream_out* legacy = nullptr;
+    const int rc = ctx->hisi_device->open_output_stream(ctx->hisi_device, handle, devices, flags,
+                                                        config, &legacy, address);
+    if (rc != 0) return rc;
+    if (legacy == nullptr) {
+        ALOGE("Vendor output open succeeded without a stream");
+        return -ENODEV;
+    }
+    audio_stream_out* wrapped = nullptr;
+    const int wrapRc = huawei::audio::stream::wrapOutput(
+            legacy,
+            [](void* cookie, audio_stream_out* raw) {
+                auto* hisiDevice = static_cast<hisi_audio_hw_device*>(cookie);
+                hisiDevice->close_output_stream(hisiDevice, raw);
+            },
+            ctx->hisi_device, &wrapped);
+    if (wrapRc < 0) {
+        ctx->hisi_device->close_output_stream(ctx->hisi_device, legacy);
+        return wrapRc;
+    }
+    *stream_out = wrapped;
+    return 0;
+#else
     return ctx->hisi_device->open_output_stream(ctx->hisi_device, handle, devices, flags, config,
                                                 stream_out, address);
+#endif
 }
 
 static void adev_close_output_stream(struct audio_hw_device* dev, struct audio_stream_out* stream) {
+#if !defined(HUAWEI_AUDIO_STREAM_COMPAT)
     hisi_wrapper_audio_device* ctx = reinterpret_cast<hisi_wrapper_audio_device*>(dev);
-
     return ctx->hisi_device->close_output_stream(ctx->hisi_device, stream);
+#else
+    (void)dev;
+    huawei::audio::stream::closeOutput(stream);
+#endif
 }
 
 static int adev_set_parameters(struct audio_hw_device* dev, const char* kvpairs) {
@@ -129,14 +168,45 @@ static int adev_open_input_stream(struct audio_hw_device* dev, audio_io_handle_t
                                   const char* address, audio_source_t source) {
     hisi_wrapper_audio_device* ctx = reinterpret_cast<hisi_wrapper_audio_device*>(dev);
 
+#if defined(HUAWEI_AUDIO_STREAM_COMPAT)
+    if (stream_in == nullptr) return -EINVAL;
+    *stream_in = nullptr;
+    audio_stream_in* legacy = nullptr;
+    const int rc = ctx->hisi_device->open_input_stream(ctx->hisi_device, handle, devices, config,
+                                                       &legacy, flags, address, source);
+    if (rc != 0) return rc;
+    if (legacy == nullptr) {
+        ALOGE("Vendor input open succeeded without a stream");
+        return -ENODEV;
+    }
+    audio_stream_in* wrapped = nullptr;
+    const int wrapRc = huawei::audio::stream::wrapInput(
+            legacy,
+            [](void* cookie, audio_stream_in* raw) {
+                auto* hisiDevice = static_cast<hisi_audio_hw_device*>(cookie);
+                hisiDevice->close_input_stream(hisiDevice, raw);
+            },
+            ctx->hisi_device, &wrapped);
+    if (wrapRc < 0) {
+        ctx->hisi_device->close_input_stream(ctx->hisi_device, legacy);
+        return wrapRc;
+    }
+    *stream_in = wrapped;
+    return 0;
+#else
     return ctx->hisi_device->open_input_stream(ctx->hisi_device, handle, devices, config, stream_in,
                                                flags, address, source);
+#endif
 }
 
 static void adev_close_input_stream(struct audio_hw_device* dev, struct audio_stream_in* in) {
+#if !defined(HUAWEI_AUDIO_STREAM_COMPAT)
     hisi_wrapper_audio_device* ctx = reinterpret_cast<hisi_wrapper_audio_device*>(dev);
-
     return ctx->hisi_device->close_input_stream(ctx->hisi_device, in);
+#else
+    (void)dev;
+    huawei::audio::stream::closeInput(in);
+#endif
 }
 
 static int adev_dump(const struct audio_hw_device* dev, int fd) {
@@ -396,6 +466,18 @@ static int adev_open(const hw_module_t* module, const char* name, hw_device_t** 
         free(adev);
         return rc;
     }
+
+#if defined(HUAWEI_AUDIO_STREAM_COMPAT)
+    rc = huawei::audio::verifyModuleSha256(
+            hisi_module, "5c882f570fee9778167f3d5a2e2f704892ec426f15b50f345c546cbf42005724");
+    if (rc < 0) {
+        ALOGE("Refusing unsupported HiSilicon audio module profile (error %d)", rc);
+        pthread_mutex_destroy(&adev->lock);
+        free(adev);
+        return rc;
+    }
+    ALOGI("Enabled verified Huawei audio stream ABI profile (output 200 bytes, input 184 bytes)");
+#endif
 
     // Open it
     rc = hisi_module->methods->open(hisi_module, name, (struct hw_device_t**)&adev->hisi_device);

@@ -14,6 +14,19 @@ soong_config_module_type {
     ],
 }
 
+soong_config_module_type {
+    name: "huawei_audio_stream_compat_defaults",
+    module_type: "cc_defaults",
+    config_namespace: "huaweiAudioVars",
+    bool_variables: ["mediapadm5lte_stream_compat"],
+    properties: [
+        "target.android_arm64.cflags",
+        "target.android_arm64.srcs",
+        "target.android_arm64.static_libs",
+        "target.android_arm64.shared_libs",
+    ],
+}
+
 emui_version_number {
     name: "emui_version_number_defaults",
     soong_config_variables: {
@@ -23,9 +36,25 @@ emui_version_number {
     },
 }
 
+huawei_audio_stream_compat_defaults {
+    name: "huawei_audio_stream_compat_defaults",
+    soong_config_variables: {
+        mediapadm5lte_stream_compat: {
+            target: {
+                android_arm64: {
+                    cflags: ["-DHUAWEI_AUDIO_STREAM_COMPAT=1"],
+                    static_libs: ["libhuawei_audio_stream_compat"],
+                    shared_libs: ["libcrypto", "libdl"],
+                    srcs: ["ModuleProfile.cpp"],
+                },
+            },
+        },
+    },
+}
+
 cc_library_shared {
     name: "audio.primary.hisi_wrapper",
-    defaults: ["emui_version_number_defaults"],
+    defaults: ["emui_version_number_defaults", "huawei_audio_stream_compat_defaults"],
     relative_install_path: "hw",
     vendor: true,
     srcs: ["audio_hw.cpp"],
